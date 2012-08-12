@@ -1,63 +1,86 @@
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Evan Carmi's .vimrc. http://ecarmi.org/
 "   Credits: {{{1
-" Hugely based off amix the lucky stiff's excellent .vim_runtime package
-" http://amix.dk - amix@amix.dk
-"
-" Plugins_Included: {{{1
-"     > bufexplorer - http://www.vim.org/scripts/script.php?script_id=42
-"       Makes it easy to switch between buffers:
-"           info -> :help bufExplorer
-"
-"     > Color Sample Pack - http://www.vim.org/scripts/script.php?script_id=625
-"       A package of a ton of color schemes.
-"
-"     > command-t.vim - http://www.vim.org/scripts/script.php?script_id=3025
-"       A fast, intuitive mechanism for opening files with a minimal number of
-"       keystrokes.
-"           info -> :help command-t
-"
-"     > NERD_tree.vim - http://www.vim.org/scripts/script.php?script_id=1658
-"       Allows you to explore the filesystem and open files and directories
-"           info -> :help NERD_tree
-"
-"     > pyflakes.vim - http://www.vim.org/scripts/script.php?script_id=2441
-"       Catches common python errors
-"
-"     > snipMate.vim - http://www.vim.org/scripts/script.php?script_id=2540
-"       Snippets for many languages (similar to TextMate's):
-"           info -> :help snipMate
-"
-"     > taglist.vim - http://vim.sourceforge.net/scripts/script.php?script_id=273
-"       A source code browser plugin that works with ctags
-"
-"     > tasklist.vim - http://www.vim.org/scripts/script.php?script_id=2607
-"       A tasklist that searches the file for FIXME, TODO, and XXX
-"
-"     > surround.vim - http://www.vim.org/scripts/script.php?script_id=1697
-"       A plugin that provides mappings to easily delete, change and add
-"       surroundsings in pairs
-"  Revisions:
-" Version: 2.0 20100723-143840 - Friday
-" REVISIONS:
-"   removed miniBufExplorer and Yankring, FuzzyFinder
-"   added taglist
-" Version: 1.0 20100419-151010 - Monday
 
-"     > 3.3: Added syntax highlighting for Mako mako.vim 
-"     > 3.2: Turned on python_highlight_all for better syntax
-"            highlighting for Python
-"     > 3.1: Added revisions ;) and bufexplorer.vim
+"Use Vundle for managing plugings
+
+set rtp+=~/.vim/bundle/vundle/
+call vundle#rc()
+
+" let Vundle manage Vundle
+" required! 
+Bundle 'gmarik/vundle'
+
+" My Bundles here:
+"
+" original repos on github
+
+Bundle 'Lokaltog/vim-easymotion'
+"-------------------------------
+" change the default EasyMotion shading to something more readable with
+" Solarized
+hi link EasyMotionTarget ErrorMsg
+hi link EasyMotionShade  Comment
+
+
+Bundle 'altercation/vim-colors-solarized'
+Bundle 'rstacruz/sparkup', {'rtp': 'vim/'}
+Bundle 'tpope/vim-rails.git'
+Bundle 'tpope/vim-surround'
+Bundle 'tpope/vim-fugitive'
+Bundle 'hallettj/jslint.vim'
+
+Bundle 'nathanaelkane/vim-indent-guides'
+let g:indent_guides_guide_size=1
+
+
+Bundle 'kien/ctrlp.vim'
+"----------------------
+"Use system find command"
+set wildignore+=*/tmp/*,*.so,*.swp,*.zip  " MacOSX/Linux
+
+let g:ctrlp_custom_ignore = '\.git$\|\.hg$\|\.svn$'
+"let g:ctrlp_user_command = 'find %s -type f'
+
+" Set the max files
+let g:ctrlp_max_files = 10000
+
+" Optimize file searching
+if has("unix")
+    let g:ctrlp_user_command = {
+                \   'types': {
+                \       1: ['.git/', 'cd %s && git ls-files']
+                \   },
+                \   'fallback': 'find %s -type f | head -' . g:ctrlp_max_files
+                \ }
+endif
+
+
+" vim-scripts repos
+Bundle 'L9'
+Bundle 'FuzzyFinder'
+
+filetype plugin indent on     " required!
+"
+" Brief help
+" :BundleList          - list configured bundles
+" :BundleInstall(!)    - install(update) bundles
+" :BundleSearch(!) foo - search(or refresh cache first) for foo
+" :BundleClean(!)      - confirm(or auto-approve) removal of unused bundles
+"
+" see :h vundle for more details or wiki for FAQ
+" NOTE: comments after Bundle command are not allowed..
+
 "
 " ====== General ===== {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Sets how many lines of history VIM has to remember
 set history=1000
 
+syntax on
+
 " Enable filetype plugin
-filetype on
-filetype plugin on
-filetype indent on
+filetype plugin indent on
 
 " Set to auto read when a file is changed from the outside
 set autoread
@@ -89,9 +112,6 @@ map <F5> :TlistAddFilesRecursive . *.py<cr>
 "Use jj as <Esc> so hands don't have to move
 imap jj <Esc>
 
-"Set foldmethod to indent for well indented code
-set foldmethod=indent
-
 " When vimrc is edited, reload it
 autocmd! bufwritepost .vimrc source ~/.vimrc
 autocmd! BufWinEnter .vimrc set foldmethod=marker
@@ -118,7 +138,7 @@ set foldcolumn=2
 " many lines above/below current cursor. Can be annoying if you use the mouse
 " to click on top of the page, because it will move the page
 set so=3
-let &sbr = nr2char(8618).' '	" Show ↪ at the beginning of wrapped lines
+let &sbr = nr2char(8618).' '    " Show ↪ at the beginning of wrapped lines
 
 set wildmenu "Turn on WiLd menu
 set wildmode=longest,full "Even nicer tab-completion on the command line
@@ -154,9 +174,11 @@ set t_vb=
 syntax enable "Enable syntax hl
 
 " Set font
-set gfn=Monaco\ 10
+"set gfn=Menlo 10
 set shell=/bin/bash
 set nu
+
+set list listchars=tab:›\ ,trail:·,eol:¬ " mark trailing white space
 
 if has("gui_running")
     "Remove menu bar(m), toolbar(T), right scroll bar(r), left scroll bar(l),
@@ -169,12 +191,17 @@ if has("gui_running")
     set guioptions-=L
     set showtabline=0
     set t_Co=256
-    set background=dark
-    set list listchars=tab:›\ ,trail:·,eol:¬ " mark trailing white space
-    colorscheme eclipse
+    set background=light
+    colorscheme solarized
 else
-  colorscheme zellner
-  set background=dark
+  "colorscheme solarized
+  "set t_Co=256
+  "let g:solarized_termcolors=256
+  "set background=light
+  " Solarized stuff
+  let g:solarized_termtrans = 1
+  set background=light
+  colorscheme solarized
 endif
 
 set encoding=utf8
@@ -199,10 +226,11 @@ set directory=~/.vim_backups//
 " => Text, tab and indent related
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 set expandtab
-set shiftwidth=4
-set tabstop=8 "see help, other than 8 can mess up printing
+set shiftwidth=2
+set tabstop=2 "see help, other than 8 can mess up printing
 set smarttab
-set softtabstop=4 " allows backspace to delete 4 spaces
+set softtabstop=2 " allows backspace to delete 4 spaces
+set vb "Visualbell, turn off audible bell
 
 set lbr
 "Set textwidth to 0; don't auto insert line breaks
@@ -482,7 +510,6 @@ au FileType python map <buffer> <leader>D ?def
 
 " ====== JavaScript section ====={{{1
 """""""""""""""""""""""""""""""
-au FileType javascript call JavaScriptFold()
 au FileType javascript setl fen
 au FileType javascript setl nocindent
 
@@ -491,17 +518,6 @@ au FileType javascript imap <c-a> alert();<esc>hi
 
 au FileType javascript inoremap <buffer> $r return 
 au FileType javascript inoremap <buffer> $f //--- PH ----------------------------------------------<esc>FP2xi
-
-function! JavaScriptFold() 
-    setl foldmethod=syntax
-    setl foldlevelstart=1
-    syn region foldBraces start=/{/ end=/}/ transparent fold keepend extend
-
-    function! FoldText()
-    return substitute(getline(v:foldstart), '{.*', '{...}', '')
-    endfunction
-    setl foldtext=FoldText()
-endfunction
 
 " ====== Vim grep ====={{{1
 """"""""""""""""""""""""""""""
@@ -594,3 +610,22 @@ endfunction
  
 set guitablabel=%{GuiTabLabel()}
 
+
+iabbrev rdb    require 'ruby-debug'; Debugger.start; Debugger.settings[:autoeval] = 1; Debugger.settings[:autolist] = 1; debugger
+iabbrev rdebug    require 'ruby-debug'; Debugger.start; Debugger.settings[:autoeval] = 1; Debugger.settings[:autolist] = 1; debugger
+iabbrev pdb    import pdb; pdb.set_trace()
+
+""" RUBY"""
+"Check syntax on file save
+autocmd FileType ruby map <leader>c :w<CR>:!ruby -c %<CR>
+
+autocmd BufWinEnter *.rabl set ft=ruby
+
+" CtrlP
+"Add keymappings
+map <leader>t :CtrlP<cr>
+map <leader>b :CtrlPBuffer<cr>
+
+set enc=utf-8
+
+set path +=

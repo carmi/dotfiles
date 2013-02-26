@@ -28,13 +28,18 @@ Bundle 'rstacruz/sparkup', {'rtp': 'vim/'}
 Bundle 'tpope/vim-rails.git'
 Bundle 'tpope/vim-surround'
 Bundle 'tpope/vim-fugitive'
-Bundle 'hallettj/jslint.vim'
+Bundle 'sjl/gundo.vim'
+nnoremap <F5> :GundoToggle<CR>
+
 
 Bundle 'nathanaelkane/vim-indent-guides'
 let g:indent_guides_guide_size=1
 
 
 Bundle 'kien/ctrlp.vim'
+
+Bundle "tpope/vim-markdown"
+
 "----------------------
 "Use system find command"
 set wildignore+=*/tmp/*,*.so,*.swp,*.zip  " MacOSX/Linux
@@ -79,8 +84,6 @@ set history=1000
 
 syntax on
 
-" Enable filetype plugin
-filetype plugin indent on
 
 " Set to auto read when a file is changed from the outside
 set autoread
@@ -107,7 +110,6 @@ map <leader>N :NERDTreeToggle<cr>
 let TList_Process_File_Always = 1
 map <leader>u :TlistToggle<cr>
 map <F4> :!/usr/bin/ctags-exuberant -R .<cr>
-map <F5> :TlistAddFilesRecursive . *.py<cr>
 
 "Use jj as <Esc> so hands don't have to move
 imap jj <Esc>
@@ -190,18 +192,13 @@ if has("gui_running")
     set guioptions-=l
     set guioptions-=L
     set showtabline=0
-    set t_Co=256
-    set background=light
+    set background=dark
     colorscheme solarized
 else
-  "colorscheme solarized
-  "set t_Co=256
-  "let g:solarized_termcolors=256
-  "set background=light
   " Solarized stuff
   let g:solarized_termtrans = 1
-  set background=light
-  colorscheme solarized
+  set background=dark
+  colorscheme desert
 endif
 
 set encoding=utf8
@@ -234,11 +231,15 @@ set vb "Visualbell, turn off audible bell
 
 set lbr
 "Set textwidth to 0; don't auto insert line breaks
+set textwidth=80
 set tw=0
 
 set ai "Auto indent
 set smartindent "Smart indet
 set wrap "Wrap lines
+
+"Handle python comment indentation - http://stackoverflow.com/questions/2360249/vim-automatically-removes-indentation-on-python-comments
+inoremap # X#
 
 map <leader>t2 :setlocal shiftwidth=2<cr>
 map <leader>t4 :setlocal shiftwidth=4<cr>
@@ -508,17 +509,6 @@ au FileType python map <buffer> <leader>C ?class
 au FileType python map <buffer> <leader>D ?def 
 
 
-" ====== JavaScript section ====={{{1
-"""""""""""""""""""""""""""""""
-au FileType javascript setl fen
-au FileType javascript setl nocindent
-
-au FileType javascript imap <c-t> AJS.log();<esc>hi
-au FileType javascript imap <c-a> alert();<esc>hi
-
-au FileType javascript inoremap <buffer> $r return 
-au FileType javascript inoremap <buffer> $f //--- PH ----------------------------------------------<esc>FP2xi
-
 " ====== Vim grep ====={{{1
 """"""""""""""""""""""""""""""
 let Grep_Skip_Dirs = 'RCS CVS SCCS .svn .git generated'
@@ -528,7 +518,7 @@ set grepprg=/bin/grep\ -nH
 " ====== Miscellaneous ====={{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Remove the Windows ^M - when the encodings gets messed up
-noremap <Leader>m mmHmt:%s/<C-V><cr>//ge<cr>'tzt'm
+"noremap <Leader>m mmHmt:%s/<C-V><cr>//ge<cr>'tzt'm
 
 " ====== Additional Settings and Mappings ====={{{1
 set showcmd "Show how much of a command you have typed so far.
@@ -542,8 +532,8 @@ set fo=tcq "Formatting options, often used with comments and gq. Not sure if thi
 " last line in a window (may not be necessary for windows xp)"
 set display+=lastline
 
-"highlight lines longer than 80 characters
-nmap <leader>l :match ErrorMsg '\%>80v.\+'<cr>
+"highlight lines longer than 79 characters
+nmap <leader>l :match ErrorMsg '\%>79v.\+'<cr>
 "unhighlight lines
 nmap <leader>L :match<cr>
 
@@ -629,3 +619,26 @@ map <leader>b :CtrlPBuffer<cr>
 set enc=utf-8
 
 set path +=
+
+
+" Linux Ubuntu settings
+if has("autocmd")
+  au InsertEnter * silent execute "!gconftool-2 --type string --set /apps/gnome-terminal/profiles/Default/cursor_shape ibeam"
+  au InsertLeave * silent execute "!gconftool-2 --type string --set /apps/gnome-terminal/profiles/Default/cursor_shape block"
+  au VimLeave * silent execute "!gconftool-2 --type string --set /apps/gnome-terminal/profiles/Default/cursor_shape ibeam"
+endif
+
+"Highlight current line in insert
+autocmd InsertEnter,InsertLeave * set cul!
+
+"Set .md as markdown, not coding much in Modula2 these days.
+autocmd BufNewFile,BufRead *.md set filetype=markdown
+
+" LaTex
+autocmd BufNewFile,BufRead *.tex set makeprg=pdflatex\ -shell-escape\ %
+
+map <leader>c <esc>0"+y$
+
+map <leader>, :make<cr><cr><cr>
+cmap w!! w !sudo tee >/dev/null %
+

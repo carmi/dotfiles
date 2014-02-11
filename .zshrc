@@ -31,10 +31,14 @@ source $ZSH/oh-my-zsh.sh
 # Which plugins would you like to load? (plugins can be found in ~/.oh-my-zsh/plugins/*)
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
-plugins=(git rvm pip virtualenvwrapper python django)
+plugins=(git rvm rails ruby git-flow)
 
 
 source ~/.bash_aliases
+
+
+# Source rackspace nova client config variables
+source ~/code/brewster/puppetmaster/modules/novaclient/files/nova_creds
 
 function lt() { ls -ltrsa "$@" | tail; }
 function psgrep() { ps axuf | grep -v grep | grep "$@" -i --color=auto; }
@@ -50,6 +54,4 @@ export PATH=/home/evan/.rvm/gems/ruby-1.9.3-p194/bin:/home/evan/.rvm/gems/ruby-1
 
 [[ -s "$HOME/.rvm/scripts/rvm" ]] && . "$HOME/.rvm/scripts/rvm" 
 
-export WORKON_HOME=$HOME/Dropbox/projects/virtualenvs
-export PROJECT_HOME=$HOME/Dropbox/projects
-source /usr/local/bin/virtualenvwrapper.sh
+PATH=$PATH:$HOME/.rvm/bin # Add RVM to PATH for scripting

@@ -1,0 +1,38 @@
+[user]
+  name = Evan Carmi
+  email = evan@ecarmi.org
+[color]
+  ui = true
+[diff]
+  tool = vimdiff
+[merge]
+  ff = no
+[alias]
+  br = branch
+  ci = commit
+  co = checkout
+  d = diff --color
+  dc = diff --cached
+  df = diff --color
+  dfc = diff --color --cached
+  dfno = diff --color --name-only
+  fu = fetch upstream
+  lg = log --color
+  ll = log --color --pretty=oneline
+  llb = log --color --decorate --pretty=oneline
+  lol = log --graph --color --decorate --pretty=oneline --abbrev-commit
+  lola = log --graph --color --decorate --pretty=oneline --abbrev-commit --all
+  ls = ls-files
+  pullr = pull --rebase
+  sh = show --color
+  st = status
+  edit-unmerged = \
+    "!f() { git ls-files --unmerged | cut -f2 | sort -u ; }; vim `f`"
+  add-unmerged = \
+    "!f() { git ls-files --unmerged | cut -f2 | sort -u ; }; git add `f`"
+  # Show files ignored by git:
+  ign = ls-files -o -i --exclude-standard
+[push]
+  default = simple
+[branch]
+  autosetuprebase = always

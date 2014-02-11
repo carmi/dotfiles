@@ -1,4 +1,4 @@
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"https://github.com/brewster/brewster/compare/develop~5...develop""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Evan Carmi's .vimrc. http://ecarmi.org/
 "   Credits: {{{1
 
@@ -24,21 +24,48 @@ hi link EasyMotionShade  Comment
 
 
 Bundle 'altercation/vim-colors-solarized'
-Bundle 'rstacruz/sparkup', {'rtp': 'vim/'}
+let g:solarized_termcolors=256
+
 Bundle 'tpope/vim-rails.git'
 Bundle 'tpope/vim-surround'
 Bundle 'tpope/vim-fugitive'
 Bundle 'sjl/gundo.vim'
+Bundle 'vim-scripts/ruby-matchit'
+Bundle 'airblade/vim-gitgutter.git'
+
 nnoremap <F5> :GundoToggle<CR>
 
+Bundle 'https://github.com/Lokaltog/powerline'
+" Powerline configuration
+set laststatus=2   " Always show the statusline
+set encoding=utf-8 " Necessary to show Unicode glyphs
+let g:Powerline_symbols = 'fancy'
 
-Bundle 'nathanaelkane/vim-indent-guides'
-let g:indent_guides_guide_size=1
+"Bundle 'nathanaelkane/vim-indent-guides'
+"let g:indent_guides_guide_size=1
+
+
+Bundle 'kana/vim-fakeclip'
 
 
 Bundle 'kien/ctrlp.vim'
 
-Bundle "tpope/vim-markdown"
+"Bundle "tpope/vim-markdown"
+Bundle "puppetlabs/puppet-syntax-vim"
+
+Bundle "scrooloose/nerdtree"
+Bundle "scrooloose/syntastic"
+
+Bundle 'thoughtbot/vim-rspec'
+Bundle 'tpope/vim-dispatch'
+" Rspec.vim mappings
+map <Leader>r :call RunCurrentSpecFile()<CR>
+map <Leader>rn :call RunNearestSpec()<CR>
+map <Leader>rl :call RunLastSpec()<CR>
+map <Leader>ra :call RunAllSpecs()<CR>
+let g:rspec_command = "Dispatch rspec {spec}"
+
+map <Leader>a :AgFromSearch<CR>
 
 "----------------------
 "Use system find command"
@@ -192,14 +219,17 @@ if has("gui_running")
     set guioptions-=l
     set guioptions-=L
     set showtabline=0
-    set background=dark
-    colorscheme solarized
+    set background=light
 else
   " Solarized stuff
-  let g:solarized_termtrans = 1
   set background=dark
-  colorscheme desert
+  " solarized options 
+  let g:solarized_termcolors = 256
+  let g:solarized_visibility = "high"
+  let g:solarized_contrast = "high"
 endif
+
+colorscheme solarized
 
 set encoding=utf8
 try
@@ -540,15 +570,6 @@ nmap <leader>L :match<cr>
 "Toggle hlsearch
 nmap <leader>h :set hls!<cr>
 
-"Quickly open notes-all
-map <leader>a :e! /scratch/data/notes-all.txt<cr>
-
-"Map r to find :::endwork section and add started + timestamp above it
-map <leader>r /:::endwork<cr>2O<esc>istarted <esc><F7><esc>
-
-"Map d to find :::endwork section and add stopped + timestamp
-map <leader>d /:::endwork<cr>O<esc>istopped <esc><F7><esc>
-
 "Remember folds for foldmethod=manual. This is done by running :mkview whenever you close a buffer
 "and :loadview when you open a new buffer.This only
 "works on python and java and ruby files (which are more likely "to have folds)
@@ -602,6 +623,7 @@ set guitablabel=%{GuiTabLabel()}
 
 
 iabbrev rdb    require 'ruby-debug'; Debugger.start; Debugger.settings[:autoeval] = 1; Debugger.settings[:autolist] = 1; debugger
+iabbrev pry    binding.pry
 iabbrev rdebug    require 'ruby-debug'; Debugger.start; Debugger.settings[:autoeval] = 1; Debugger.settings[:autolist] = 1; debugger
 iabbrev pdb    import pdb; pdb.set_trace()
 
@@ -622,11 +644,13 @@ set path +=
 
 
 " Linux Ubuntu settings
-if has("autocmd")
-  au InsertEnter * silent execute "!gconftool-2 --type string --set /apps/gnome-terminal/profiles/Default/cursor_shape ibeam"
-  au InsertLeave * silent execute "!gconftool-2 --type string --set /apps/gnome-terminal/profiles/Default/cursor_shape block"
-  au VimLeave * silent execute "!gconftool-2 --type string --set /apps/gnome-terminal/profiles/Default/cursor_shape ibeam"
-endif
+"if has("unix")
+"  if has("autocmd")
+"    au InsertEnter * silent execute "!gconftool-2 --type string --set /apps/gnome-terminal/profiles/Default/cursor_shape ibeam"
+"    au InsertLeave * silent execute "!gconftool-2 --type string --set /apps/gnome-terminal/profiles/Default/cursor_shape block"
+"    au VimLeave * silent execute "!gconftool-2 --type string --set /apps/gnome-terminal/profiles/Default/cursor_shape ibeam"
+"  endif
+"endif
 
 "Highlight current line in insert
 autocmd InsertEnter,InsertLeave * set cul!
@@ -637,8 +661,38 @@ autocmd BufNewFile,BufRead *.md set filetype=markdown
 " LaTex
 autocmd BufNewFile,BufRead *.tex set makeprg=pdflatex\ -shell-escape\ %
 
+"Auto save buffer on focus lost
+autocmd FocusLost * :w
+
 map <leader>c <esc>0"+y$
 
 map <leader>, :make<cr><cr><cr>
 cmap w!! w !sudo tee >/dev/null %
 
+set clipboard=unnamed
+Bundle 'rking/ag.vim'
+
+" Enable syntax highlighting when buffers were loaded through :bufdo, which
+" disables the Syntax autocmd event to speed up processing.
+augroup EnableSyntaxHighlighting
+    " Filetype processing does happen, so we can detect a buffer initially
+    " loaded during :bufdo through a set filetype, but missing b:current_syntax.
+    " Also don't do this when the user explicitly turned off syntax highlighting
+    " via :syntax off.
+    " Note: Must allow nesting of autocmds so that the :syntax enable triggers
+    " the ColorScheme event. Otherwise, some highlighting groups may not be
+    " restored properly.
+    autocmd! BufWinEnter * nested if exists('syntax_on') && ! exists('b:current_syntax') && ! empty(&l:filetype) | syntax enable | endif
+
+    " The above does not handle reloading via :bufdo edit!, because the
+    " b:current_syntax variable is not cleared by that. During the :bufdo,
+    " 'eventignore' contains "Syntax", so this can be used to detect this
+    " situation when the file is re-read into the buffer. Due to the
+    " 'eventignore', an immediate :syntax enable is ignored, but by clearing
+    " b:current_syntax, the above handler will do this when the reloaded buffer
+    " is displayed in a window again.
+    autocmd! BufRead * if exists('syntax_on') && exists('b:current_syntax') && ! empty(&l:filetype) && index(split(&eventignore, ','), 'Syntax') != -1 | unlet! b:current_syntax | endif
+augroup END
+
+set ttyfast
+set lazyredraw

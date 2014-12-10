@@ -1,15 +1,17 @@
 alias s='git status'
 alias dpl='cd ~/Dropbox/wesleyan/spring13/comp321/hw/'
 alias vim='mvim -v'
-alias ag='ag --smart-case'
+# alias ag='ag --smart-case'
 
-CODE_HOME='~/code/brewster'
+CODE_HOME='~/code'
 BREWSTER_HOME="$CODE_HOME/brewster"
 
 # directory aliases
-alias br="cd $BREWSTER_HOME"
-alias pup="cd $CODE_HOME/puppetmaster"
+alias br="cd $BREWSTER_HOME/brewster"
+alias web="cd $BREWSTER_HOME/web"
+alias pup="cd $BREWSTER_HOME/puppetmaster"
 alias dots="cd $CODE_HOME/dot-files"
+alias ecarmi="cd $CODE_HOME/ecarmi.org-nanoc"
 
 # brewster start aliases
 alias es="cd $BREWSTER_HOME; script/elasticsearch start"

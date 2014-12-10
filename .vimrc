@@ -33,6 +33,10 @@ Bundle 'sjl/gundo.vim'
 Bundle 'vim-scripts/ruby-matchit'
 Bundle 'airblade/vim-gitgutter.git'
 
+Bundle 'kchmck/vim-coffee-script'
+Bundle 'mustache/vim-mustache-handlebars'
+" Bundle 'mikewest/vimroom'
+
 nnoremap <F5> :GundoToggle<CR>
 
 Bundle 'https://github.com/Lokaltog/powerline'
@@ -53,8 +57,10 @@ Bundle 'kien/ctrlp.vim'
 "Bundle "tpope/vim-markdown"
 Bundle "puppetlabs/puppet-syntax-vim"
 
-Bundle "scrooloose/nerdtree"
+"Bundle "scrooloose/nerdtree"
 Bundle "scrooloose/syntastic"
+
+Bundle "nelstrom/vim-qargs"
 
 Bundle 'thoughtbot/vim-rspec'
 Bundle 'tpope/vim-dispatch'
@@ -486,13 +492,6 @@ let g:bufExplorerDefaultHelp=0
 let g:bufExplorerShowRelativePath=1
 let g:bufExplorerSortBy = "name"
 
-" ====== Snipmate plugin ====={{{1
-""""""""""""""""""""""""""""""
-
-"Snipmates Django configs
-autocmd FileType python set ft=python.django " For SnipMate
-autocmd FileType html set ft=htmldjango.html " For SnipMate
-
 " ====== Omni complete functions ====={{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 autocmd FileType python set omnifunc=pythoncomplete#Complete
@@ -623,7 +622,7 @@ set guitablabel=%{GuiTabLabel()}
 
 
 iabbrev rdb    require 'ruby-debug'; Debugger.start; Debugger.settings[:autoeval] = 1; Debugger.settings[:autolist] = 1; debugger
-iabbrev pry    binding.pry
+iabbrev pry    binding.pry<Esc>g0dw$
 iabbrev rdebug    require 'ruby-debug'; Debugger.start; Debugger.settings[:autoeval] = 1; Debugger.settings[:autolist] = 1; debugger
 iabbrev pdb    import pdb; pdb.set_trace()
 
@@ -661,9 +660,6 @@ autocmd BufNewFile,BufRead *.md set filetype=markdown
 " LaTex
 autocmd BufNewFile,BufRead *.tex set makeprg=pdflatex\ -shell-escape\ %
 
-"Auto save buffer on focus lost
-autocmd FocusLost * :w
-
 map <leader>c <esc>0"+y$
 
 map <leader>, :make<cr><cr><cr>
@@ -696,3 +692,21 @@ augroup END
 
 set ttyfast
 set lazyredraw
+
+command! Prose inoremap <buffer> . .<C-G>u|
+            \ inoremap <buffer> ! !<C-G>u|
+            \ inoremap <buffer> ? ?<C-G>u|
+            \ setlocal spell spelllang=en|
+            \ setlocal formatoptions=ant
+            \     nolist nowrap tw=74 fo=t1 nonu|
+            \ augroup PROSE|
+            \   autocmd InsertEnter <buffer> set fo+=a|
+            \   autocmd InsertLeave <buffer> set fo-=a|
+            \ augroup END
+
+command! Code silent! iunmap <buffer> .|
+            \ silent! iunmap <buffer> !|
+            \ silent! iunmap <buffer> ?|
+            \ setlocal nospell list nowrap
+            \     tw=74 fo=cqr1 showbreak=… nu|
+            \ silent! autocmd! PROSE * <buffer>

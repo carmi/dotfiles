@@ -23,7 +23,8 @@
   lol = log --graph --color --decorate --pretty=oneline --abbrev-commit
   lola = log --graph --color --decorate --pretty=oneline --abbrev-commit --all
   ls = ls-files
-  pullr = pull --rebase
+  ph = push origin HEAD
+  #pullr = pull --rebase
   sh = show --color
   st = status
   edit-unmerged = \
@@ -32,7 +33,13 @@
     "!f() { git ls-files --unmerged | cut -f2 | sort -u ; }; git add `f`"
   # Show files ignored by git:
   ign = ls-files -o -i --exclude-standard
+  remove-merged-branches = \
+    "!git branch --merged | grep -v \"\\*\" | xargs -n 1 git branch -d"
+  up = "!git remote update -p; git merge --ff-only @{u}"
 [push]
   default = simple
-[branch]
-  autosetuprebase = always
+[core]
+	excludesfile = /Users/evan/.gitignore_global
+	autocrlf = false
+[credential]
+	helper = osxkeychain
